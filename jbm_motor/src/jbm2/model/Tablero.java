@@ -10,7 +10,7 @@ public class Tablero {
     private Espacio[][] cuadrante;
     private int filas;
     private int columnas;
-    
+
     public Tablero(int filas, int columnas, int cantidadDeBombas) {
         this.filas = filas;
         this.columnas = columnas;
@@ -35,7 +35,17 @@ public class Tablero {
     }
 
     public void print() {
+        
+        System.out.print("   ");
+        
+        for(int i=0; i<columnas; i++){
+            System.out.print(" "+i+" ");
+        }
+        
+        System.out.println();
+        
         for (int i = 0; i < filas; i++) {
+            System.out.print(" "+i+" ");
             for (int j = 0; j < columnas; j++) {
                 System.out.print(cuadrante[i][j].toString());
             }
@@ -129,19 +139,22 @@ public class Tablero {
     }
 
     /**
-     * 
+     *
      * @param p
-     * @return retorno true si no es bomba, y false si es bomba
+     * @return retorno true si puede seguir jugando y false si no
      */
-    public boolean jugar(Point p) {
+    public boolean jugar(Point p, boolean isBandera) {
         Espacio actual = cuadrante[p.x][p.y];
         actual.setDescubierto(true);
+        actual.setBandera(isBandera);
 
-        if (actual instanceof Bomba) {
-            return false;
-        } else if (actual instanceof Vacio) {
-            // aca ver como recorrer los cuadrante para cambiarlos
-            descubrir(p);
+        if (!isBandera) {
+            if (actual instanceof Bomba) {
+                return false;
+            } else if (actual instanceof Vacio) {
+                // aca ver como recorrer los cuadrante para cambiarlos
+                descubrir(p);
+            }
         }
         return true;
     }
@@ -149,33 +162,48 @@ public class Tablero {
     private void descubrir(Point p) {
         Espacio actual;
         List<Vacio> vacios = new ArrayList<>();
-        
+
         /*Acá recorro el alrededor del punto (2 ciclos)*/
         for (int i = p.x - 1; i <= p.x + 1; i++) {
             for (int j = p.y - 1; j <= p.y + 1; j++) {
                 try {
                     actual = cuadrante[i][j];
-                    
+
                     // si no está descubierto...
-                    if(!actual.isDescubierto()){
+                    if (!actual.isDescubierto()) {
                         // lo descubro
                         actual.setDescubierto(true);
-                        
-                        if (actual instanceof Vacio){
-                            vacios.add((Vacio)actual);
+
+                        if (actual instanceof Vacio) {
+                            vacios.add((Vacio) actual);
                         }
                     }
-                    
+
                 } catch (Exception e) {
                 }
             }
         }
-        
+
         /*Si existen vacios, lo debo recorrer de forma recursiva*/
-        if(!vacios.isEmpty()){
-            for(Vacio vacio : vacios){
+        if (!vacios.isEmpty()) {
+            for (Vacio vacio : vacios) {
                 descubrir(vacio.getPunto());
             }
         }
+    }
+
+    public boolean gano() {
+        Espacio actual;
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                actual = cuadrante[i][j];
+                
+                if(actual instanceof Bomba && !actual.isBandera()){
+                    return false;
+                }
+            }
+        }
+        
+        return true;
     }
 }

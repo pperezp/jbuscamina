@@ -32,6 +32,10 @@ public class Espacio {
     public boolean isBandera() {
         return bandera;
     }
+
+    public void setBandera(boolean bandera) {
+        this.bandera = bandera;
+    }
     
     
     
