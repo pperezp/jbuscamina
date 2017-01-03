@@ -1,19 +1,21 @@
 package jbm2.model;
 
+import java.util.List;
 import java.awt.Point;
+import java.util.ArrayList;
 import jbm2.model.util.Util;
 
 public class Tablero {
 
-    private Espacio[][] espacios;
+    private Espacio[][] cuadrante;
     private int filas;
     private int columnas;
-
+    
     public Tablero(int filas, int columnas, int cantidadDeBombas) {
         this.filas = filas;
         this.columnas = columnas;
 
-        espacios = new Espacio[filas][columnas];
+        cuadrante = new Espacio[filas][columnas];
 
         initTablero();
         initBombas(cantidadDeBombas);
@@ -22,12 +24,12 @@ public class Tablero {
     }
 
     /**
-     * Llena el tablero de espacios vacios
+     * Llena el tablero de cuadrante vacios
      */
     private void initTablero() {
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                espacios[i][j] = new Vacio(new Point(i, j));
+                cuadrante[i][j] = new Vacio(new Point(i, j));
             }
         }
     }
@@ -35,14 +37,14 @@ public class Tablero {
     public void print() {
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                System.out.print(espacios[i][j].toString());
+                System.out.print(cuadrante[i][j].toString());
             }
             System.out.println();
         }
     }
 
     private boolean isBomba(Point p) {
-        return espacios[p.x][p.y] instanceof Bomba;
+        return cuadrante[p.x][p.y] instanceof Bomba;
     }
 
     /**
@@ -52,7 +54,7 @@ public class Tablero {
      * getPuntoRandom, le debo entregar el valor máximo posible del punto
      */
     private Point getPuntoMaximo() {
-        return espacios[filas - 1][columnas - 1].getPunto();
+        return cuadrante[filas - 1][columnas - 1].getPunto();
     }
 
     private void initBombas(int bombas) {
@@ -64,17 +66,17 @@ public class Tablero {
                 puntoRandom = Util.getPuntoRandom(getPuntoMaximo());
             } while (isBomba(puntoRandom));
 
-            espacios[puntoRandom.x][puntoRandom.y] = new Bomba(puntoRandom);
+            cuadrante[puntoRandom.x][puntoRandom.y] = new Bomba(puntoRandom);
             cont++;
         }
     }
 
     private void printBombas() {
         System.out.println("Bombas");
-        for (int i = 0; i < espacios.length; i++) {
-            for (int j = 0; j < espacios[i].length; j++) {
-                if (espacios[i][j] instanceof Bomba) {
-                    System.out.println(espacios[i][j].getPunto());
+        for (int i = 0; i < cuadrante.length; i++) {
+            for (int j = 0; j < cuadrante[i].length; j++) {
+                if (cuadrante[i][j] instanceof Bomba) {
+                    System.out.println(cuadrante[i][j].getPunto());
                 }
             }
         }
@@ -87,7 +89,7 @@ public class Tablero {
         for (int i = p.x - 1; i <= p.x + 1; i++) {
             for (int j = p.y - 1; j <= p.y + 1; j++) {
                 try {
-                    if (espacios[i][j] instanceof Bomba) {
+                    if (cuadrante[i][j] instanceof Bomba) {
                         cont++;
                     }
                 } catch (Exception e) {
@@ -108,16 +110,71 @@ public class Tablero {
 //        new Tablero(10,10,10).getBombasAlrededor(new Point(9,9));
     }
 
+    public Espacio[][] getEspacios() {
+        return cuadrante;
+    }
+
     private void initNumeros() {
         Vacio vacio;
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 // solo veo si hay bombas alrededor, cuando el espacio actual
                 // es vacio.
-                if (espacios[i][j] instanceof Vacio) {
-                    vacio = (Vacio) espacios[i][j];
-                    espacios[i][j] = getBombasAlrededor(vacio);
+                if (cuadrante[i][j] instanceof Vacio) {
+                    vacio = (Vacio) cuadrante[i][j];
+                    cuadrante[i][j] = getBombasAlrededor(vacio);
                 }
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param p
+     * @return retorno true si no es bomba, y false si es bomba
+     */
+    public boolean jugar(Point p) {
+        Espacio actual = cuadrante[p.x][p.y];
+        actual.setDescubierto(true);
+
+        if (actual instanceof Bomba) {
+            return false;
+        } else if (actual instanceof Vacio) {
+            // aca ver como recorrer los cuadrante para cambiarlos
+            descubrir(p);
+        }
+        return true;
+    }
+
+    private void descubrir(Point p) {
+        Espacio actual;
+        List<Vacio> vacios = new ArrayList<>();
+        
+        /*Acá recorro el alrededor del punto (2 ciclos)*/
+        for (int i = p.x - 1; i <= p.x + 1; i++) {
+            for (int j = p.y - 1; j <= p.y + 1; j++) {
+                try {
+                    actual = cuadrante[i][j];
+                    
+                    // si no está descubierto...
+                    if(!actual.isDescubierto()){
+                        // lo descubro
+                        actual.setDescubierto(true);
+                        
+                        if (actual instanceof Vacio){
+                            vacios.add((Vacio)actual);
+                        }
+                    }
+                    
+                } catch (Exception e) {
+                }
+            }
+        }
+        
+        /*Si existen vacios, lo debo recorrer de forma recursiva*/
+        if(!vacios.isEmpty()){
+            for(Vacio vacio : vacios){
+                descubrir(vacio.getPunto());
             }
         }
     }

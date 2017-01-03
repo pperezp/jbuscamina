@@ -10,6 +10,11 @@ public class Vacio extends Espacio{
     
     @Override
     public String toString() {
-        return " - ";
+//        return " - ("+(super.isDescubierto()?"t":"f")+")";
+        if(super.isDescubierto()){
+            return " - ";
+        }else{
+            return " x ";
+        }
     }
 }

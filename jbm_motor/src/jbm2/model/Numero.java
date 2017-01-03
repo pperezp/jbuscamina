@@ -16,7 +16,13 @@ public class Numero extends Espacio{
 
     @Override
     public String toString() {
-        return " "+String.valueOf(valor)+" ";
+//        return " "+String.valueOf(valor)+" ("+(super.isDescubierto()?"t":"f")+")";
+    
+        if(super.isDescubierto()){
+            return " "+String.valueOf(valor)+" ";
+        }else{
+            return " x ";
+        }
     }
     
     

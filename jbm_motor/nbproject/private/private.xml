@@ -6,6 +6,14 @@
         <group name="MIO"/>
         <group name="Revisión"/>
         <group/>
-        <group name="video"/>
+        <group name="video">
+            <file>file:/home/prez/Escritorio/jbuscamina/jbm_motor/src/jbm2/test/Test.java</file>
+            <file>file:/home/prez/Escritorio/jbuscamina/jbm_motor/src/jbm2/model/Numero.java</file>
+            <file>file:/home/prez/Escritorio/jbuscamina/jbm_motor/src/jbm2/model/Bomba.java</file>
+            <file>file:/home/prez/Escritorio/jbuscamina/jbm_motor/src/jbm2/model/Vacio.java</file>
+            <file>file:/home/prez/Escritorio/jbuscamina/jbm_motor/src/jbm2/model/Tablero.java</file>
+            <file>file:/home/prez/Escritorio/jbuscamina/jbm_motor/src/jbm2/model/Espacio.java</file>
+            <file>file:/home/prez/Escritorio/jbuscamina/jbm_motor/src/jbm2/model/util/Util.java</file>
+        </group>
     </open-files>
 </project-private>

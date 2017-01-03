@@ -10,6 +10,11 @@ public class Bomba extends Espacio{
     
     @Override
     public String toString() {
-        return " B ";
+//        return " B ("+(super.isDescubierto()?"t":"f")+")";
+        if(super.isDescubierto()){
+            return " B ";
+        }else{
+            return " x ";
+        }
     }
 }
