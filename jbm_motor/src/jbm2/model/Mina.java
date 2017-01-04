@@ -2,9 +2,9 @@ package jbm2.model;
 
 import java.awt.Point;
 
-public class Bomba extends Espacio{
+public class Mina extends Espacio{
 
-    public Bomba(Point punto) {
+    public Mina(Point punto) {
         super(punto);
     }
     
@@ -14,7 +14,7 @@ public class Bomba extends Espacio{
         if(super.isDescubierto()){
             return " X ";
         }else if(super.isBandera()){
-            return " B ";
+            return " M ";
         }else{
             return "   ";
         }

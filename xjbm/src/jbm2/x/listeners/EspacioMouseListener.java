@@ -12,10 +12,10 @@ import jbm2.x.XJbm2;
 
 public class EspacioMouseListener implements MouseListener {
 
-    private final JugoListener jugoListener;
+    private final JuegoListener juegoListener;
 
-    public EspacioMouseListener(JugoListener jugoListener) {
-        this.jugoListener = jugoListener;
+    public EspacioMouseListener(JuegoListener jugoListener) {
+        this.juegoListener = jugoListener;
     }
 
     @Override
@@ -24,48 +24,59 @@ public class EspacioMouseListener implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        JLabel lbl = (JLabel) e.getComponent();
-        JugadaBandera jugadaBandera = null;
-        int x, y;
-        boolean jugadaValida = true;
-
-        x = Integer.parseInt(lbl.getName().split("-")[0]);
-        y = Integer.parseInt(lbl.getName().split("-")[1]);
-        Point p = new Point(x, y);
-
-        if (e.getButton() == MouseEvent.BUTTON3) {
-            if (XJbm2.juego.isDescubierto(p)) {
-                jugadaValida = false;
-            } else {
-                boolean isBandera = XJbm2.juego.isBandera(p);
-                jugadaBandera = new JugadaBandera(!isBandera);
+        if (XJbm2.habilitado) {
+            if(XJbm2.isStandBy()){
+                juegoListener.iniciarPartida();
             }
+            
+            JLabel lbl = (JLabel) e.getComponent();
+            JugadaBandera jugadaBandera = null;
+            int x, y;
+            boolean jugadaValida = true;
 
-        }
+            x = Integer.parseInt(lbl.getName().split("-")[0]);
+            y = Integer.parseInt(lbl.getName().split("-")[1]);
+            Point p = new Point(x, y);
 
-        if (jugadaValida) {
-            boolean seguirJugando = XJbm2.juego.jugar(p, jugadaBandera);
-
-            if (!XJbm2.juego.gano()) {
-                if (!seguirJugando) {
-                    jugoListener.terminarPartida(false);
-                }
-            } else {
-                // gano
-                jugoListener.terminarPartida(true);
-            }
-
-            if (XJbm2.juego.isDescubierto(p)) {
-                if (XJbm2.juego.isVacio(p)) {
-                    jugoListener.actualizarVistaCompleta();
+            if (e.getButton() == MouseEvent.BUTTON3) {
+                if (XJbm2.juego.isDescubierto(p)) {
+                    jugadaValida = false;
                 } else {
-                    jugoListener.actualizarPunto(p);
+                    boolean isBandera = XJbm2.juego.isBandera(p);
+                    jugadaBandera = new JugadaBandera(!isBandera);
+                    
+                    if(jugadaBandera.isPonerBandera()){
+                        juegoListener.disminuirContadorMinas();
+                    }else{
+                        juegoListener.aumentarContadorMinas();
+                    }
                 }
-            } else {
-                jugoListener.actualizarPunto(p);
+
+            }
+
+            if (jugadaValida) {
+                boolean seguirJugando = XJbm2.juego.jugar(p, jugadaBandera);
+
+                if (!XJbm2.juego.gano()) {
+                    if (!seguirJugando) {
+                        juegoListener.terminarPartida(false);
+                    }
+                } else {
+                    // gano
+                    juegoListener.terminarPartida(true);
+                }
+
+                if (XJbm2.juego.isDescubierto(p)) {
+                    if (XJbm2.juego.isVacio(p)) {
+                        juegoListener.actualizarVistaCompleta();
+                    } else {
+                        juegoListener.actualizarPunto(p);
+                    }
+                } else {
+                    juegoListener.actualizarPunto(p);
+                }
             }
         }
-
     }
 
     @Override

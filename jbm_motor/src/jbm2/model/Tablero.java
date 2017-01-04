@@ -8,19 +8,21 @@ import jbm2.model.util.Util;
 public class Tablero {
 
     private final Espacio[][] cuadrante;
+    private List<Mina> minas; // esto lo hice para no recorrer 
+                                //toda la matriz cuando el usuario pierda.
     private final int filas;
     private final int columnas;
 
-    public Tablero(int filas, int columnas, int cantidadDeBombas) {
+    public Tablero(int filas, int columnas, int cantidadDeMinas) {
         this.filas = filas;
         this.columnas = columnas;
 
         cuadrante = new Espacio[filas][columnas];
 
         initTablero();
-        initBombas(cantidadDeBombas);
+        initMinas(cantidadDeMinas);
         initNumeros();
-//        printBombas();
+//        printMinas();
     }
 
     public int getFilas() {
@@ -30,8 +32,6 @@ public class Tablero {
     public int getColumnas() {
         return columnas;
     }
-    
-    
 
     /**
      * Llena el tablero de cuadrante vacios
@@ -45,17 +45,17 @@ public class Tablero {
     }
 
     public void print() {
-        
+
         System.out.print("   ");
-        
-        for(int i=0; i<columnas; i++){
-            System.out.print(" "+i+" ");
+
+        for (int i = 0; i < columnas; i++) {
+            System.out.print(" " + i + " ");
         }
-        
+
         System.out.println();
-        
+
         for (int i = 0; i < filas; i++) {
-            System.out.print(" "+i+" ");
+            System.out.print(" " + i + " ");
             for (int j = 0; j < columnas; j++) {
                 System.out.print(cuadrante[i][j].toString());
             }
@@ -63,21 +63,26 @@ public class Tablero {
         }
     }
 
-    private boolean isBomba(Point p) {
-        return cuadrante[p.x][p.y] instanceof Bomba;
+    public boolean isMina(Point p) {
+        return cuadrante[p.x][p.y] instanceof Mina;
     }
-    
-    public boolean isBandera(Point p){
+
+    public boolean isBandera(Point p) {
         return cuadrante[p.x][p.y].isBandera();
     }
 
-    public boolean isVacio(Point p){
+    public boolean isVacio(Point p) {
         return cuadrante[p.x][p.y] instanceof Vacio;
     }
-    
-    public boolean isDescubierto(Point p){
+
+    public boolean isDescubierto(Point p) {
         return cuadrante[p.x][p.y].isDescubierto();
     }
+
+    public boolean isNumero(Point p) {
+        return cuadrante[p.x][p.y] instanceof Numero;
+    }
+
     /**
      *
      * @return El punto máximo. EJ: si la matriz es de 10x10, devuelve el punto
@@ -88,39 +93,42 @@ public class Tablero {
         return cuadrante[filas - 1][columnas - 1].getPunto();
     }
 
-    private void initBombas(int bombas) {
+    private void initMinas(int cantidadMinas) {
         int cont = 0;
-
+        
+        minas = new ArrayList<>();
+        
         Point puntoRandom;
-        while (cont < bombas) {
+        while (cont < cantidadMinas) {
             do {
                 puntoRandom = Util.getPuntoRandom(getPuntoMaximo());
-            } while (isBomba(puntoRandom));
+            } while (isMina(puntoRandom));
 
-            cuadrante[puntoRandom.x][puntoRandom.y] = new Bomba(puntoRandom);
+            cuadrante[puntoRandom.x][puntoRandom.y] = new Mina(puntoRandom);
+            minas.add((Mina)cuadrante[puntoRandom.x][puntoRandom.y]);
             cont++;
         }
     }
 
-    private void printBombas() {
-        System.out.println("Bombas");
+    private void printMinas() {
+        System.out.println("Minas");
         for (int i = 0; i < cuadrante.length; i++) {
             for (int j = 0; j < cuadrante[i].length; j++) {
-                if (cuadrante[i][j] instanceof Bomba) {
+                if (cuadrante[i][j] instanceof Mina) {
                     System.out.println(cuadrante[i][j].getPunto());
                 }
             }
         }
     }
 
-    private Espacio getBombasAlrededor(Vacio vacio) {
+    private Espacio getMinasAlrededor(Vacio vacio) {
         int cont = 0;
         Point p = vacio.getPunto();
 
         for (int i = p.x - 1; i <= p.x + 1; i++) {
             for (int j = p.y - 1; j <= p.y + 1; j++) {
                 try {
-                    if (cuadrante[i][j] instanceof Bomba) {
+                    if (cuadrante[i][j] instanceof Mina) {
                         cont++;
                     }
                 } catch (Exception e) {
@@ -128,11 +136,11 @@ public class Tablero {
             }
         }
 
-        // si no hay bombas, es un espacio vacio
+        // si no hay minas, es un espacio vacio
         if (cont == 0) {
             return new Vacio(p);
         } else {
-            // en cambio si hay bombas, es un Numero
+            // en cambio si hay minas, es un Numero
             return new Numero(cont, p);
         }
     }
@@ -140,8 +148,8 @@ public class Tablero {
     public Espacio[][] getCuadrante() {
         return cuadrante;
     }
-    
-    public Espacio getEspacio(Point p){
+
+    public Espacio getEspacio(Point p) {
         return cuadrante[p.x][p.y];
     }
 
@@ -149,11 +157,11 @@ public class Tablero {
         Vacio vacio;
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                // solo veo si hay bombas alrededor, cuando el espacio actual
+                // solo veo si hay minas alrededor, cuando el espacio actual
                 // es vacio.
                 if (cuadrante[i][j] instanceof Vacio) {
                     vacio = (Vacio) cuadrante[i][j];
-                    cuadrante[i][j] = getBombasAlrededor(vacio);
+                    cuadrante[i][j] = getMinasAlrededor(vacio);
                 }
             }
         }
@@ -167,21 +175,21 @@ public class Tablero {
      */
     public boolean jugar(Point p, JugadaBandera jugadaBandera) {
         Espacio actual = cuadrante[p.x][p.y];
-        
+
         if (jugadaBandera == null) {
             actual.setDescubierto(true);
-            if (actual instanceof Bomba) {
+            if (actual instanceof Mina) {
                 return false;
             } else if (actual instanceof Vacio) {
                 // aca ver como recorrer los cuadrante para cambiarlos
                 descubrir(p);
             }
-        }else{
+        } else {
             actual.setBandera(jugadaBandera.isPonerBandera());
         }
         return true;
     }
-    
+
 //    private void ponerBandera(Point p){
 //        Espacio actual = cuadrante[p.x][p.y];
 //        actual.setBandera(true);
@@ -191,7 +199,6 @@ public class Tablero {
 //        Espacio actual = cuadrante[p.x][p.y];
 //        actual.setBandera(false);
 //    }
-
     private void descubrir(Point p) {
         Espacio actual;
         List<Vacio> vacios = new ArrayList<>();
@@ -230,13 +237,26 @@ public class Tablero {
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 actual = cuadrante[i][j];
-                
-                if(actual instanceof Bomba && !actual.isBandera()){
+
+                if (actual instanceof Mina && !actual.isBandera()) {
                     return false;
                 }
             }
         }
-        
+
         return true;
     }
+
+    // Este método se llama cuando el usuario pierde
+    public void explotarMinas() {
+       for(Mina b : minas){
+           b.setDescubierto(true);
+       }
+    }
+
+    public List<Mina> getMinas() {
+        return minas;
+    }
+    
+    
 }
