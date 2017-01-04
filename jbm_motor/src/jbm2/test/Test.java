@@ -3,32 +3,37 @@ package jbm2.test;
 import java.awt.Point;
 import jbm2.model.Tablero;
 import java.util.Scanner;
+import jbm2.model.JugadaBandera;
 
 public class Test {
 
     public static void main(String[] args) {
-        Tablero t = new Tablero(10, 10, 4);
-
-        t.print();
-
         Scanner scan = new Scanner(System.in);
+        Tablero tablero = new Tablero(10, 10, 4);
 
-        int x, y;
+        tablero.print();
+
+        Point punto = new Point();
         int bandera;
         boolean seguirJugando = false;
 
-        while (!t.gano()) {
+        while (!tablero.gano()) {
             System.out.print("x: ");
-            
-            x = scan.nextInt();
+            punto.x = scan.nextInt();
             System.out.print("y: ");
-            y = scan.nextInt();
-
+            punto.y = scan.nextInt();
+            
             System.out.print("Bandera? 1.-si 2.-no ");
             bandera = scan.nextInt();
             
-            seguirJugando = t.jugar(new Point(x, y), bandera == 1);
-            t.print();
+            JugadaBandera jb = null;
+            if(bandera == 1){
+                // si quiero jugar bandera, switcheo el estado de la bandera
+                jb = new JugadaBandera(!tablero.isBandera(punto));
+            }
+            
+            seguirJugando = tablero.jugar(punto, jb);
+            tablero.print();
             
             if(!seguirJugando){
                 System.out.println("Perdiste!");

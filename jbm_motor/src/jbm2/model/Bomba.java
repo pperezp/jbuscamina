@@ -12,9 +12,11 @@ public class Bomba extends Espacio{
     public String toString() {
 //        return " B ("+(super.isDescubierto()?"t":"f")+")";
         if(super.isDescubierto()){
+            return " X ";
+        }else if(super.isBandera()){
             return " B ";
         }else{
-            return " x ";
+            return "   ";
         }
     }
 }

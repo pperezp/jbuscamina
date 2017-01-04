@@ -7,9 +7,9 @@ import jbm2.model.util.Util;
 
 public class Tablero {
 
-    private Espacio[][] cuadrante;
-    private int filas;
-    private int columnas;
+    private final Espacio[][] cuadrante;
+    private final int filas;
+    private final int columnas;
 
     public Tablero(int filas, int columnas, int cantidadDeBombas) {
         this.filas = filas;
@@ -22,6 +22,16 @@ public class Tablero {
         initNumeros();
 //        printBombas();
     }
+
+    public int getFilas() {
+        return filas;
+    }
+
+    public int getColumnas() {
+        return columnas;
+    }
+    
+    
 
     /**
      * Llena el tablero de cuadrante vacios
@@ -56,7 +66,18 @@ public class Tablero {
     private boolean isBomba(Point p) {
         return cuadrante[p.x][p.y] instanceof Bomba;
     }
+    
+    public boolean isBandera(Point p){
+        return cuadrante[p.x][p.y].isBandera();
+    }
 
+    public boolean isVacio(Point p){
+        return cuadrante[p.x][p.y] instanceof Vacio;
+    }
+    
+    public boolean isDescubierto(Point p){
+        return cuadrante[p.x][p.y].isDescubierto();
+    }
     /**
      *
      * @return El punto máximo. EJ: si la matriz es de 10x10, devuelve el punto
@@ -116,12 +137,12 @@ public class Tablero {
         }
     }
 
-    public static void main(String[] args) {
-//        new Tablero(10,10,10).getBombasAlrededor(new Point(9,9));
-    }
-
-    public Espacio[][] getEspacios() {
+    public Espacio[][] getCuadrante() {
         return cuadrante;
+    }
+    
+    public Espacio getEspacio(Point p){
+        return cuadrante[p.x][p.y];
     }
 
     private void initNumeros() {
@@ -141,23 +162,35 @@ public class Tablero {
     /**
      *
      * @param p
+     * @param jugadaBandera si la jugada NO es bandera, el objeto es null
      * @return retorno true si puede seguir jugando y false si no
      */
-    public boolean jugar(Point p, boolean isBandera) {
+    public boolean jugar(Point p, JugadaBandera jugadaBandera) {
         Espacio actual = cuadrante[p.x][p.y];
-        actual.setDescubierto(true);
-        actual.setBandera(isBandera);
-
-        if (!isBandera) {
+        
+        if (jugadaBandera == null) {
+            actual.setDescubierto(true);
             if (actual instanceof Bomba) {
                 return false;
             } else if (actual instanceof Vacio) {
                 // aca ver como recorrer los cuadrante para cambiarlos
                 descubrir(p);
             }
+        }else{
+            actual.setBandera(jugadaBandera.isPonerBandera());
         }
         return true;
     }
+    
+//    private void ponerBandera(Point p){
+//        Espacio actual = cuadrante[p.x][p.y];
+//        actual.setBandera(true);
+//    }
+//    
+//    private void sacarBandera(Point p){
+//        Espacio actual = cuadrante[p.x][p.y];
+//        actual.setBandera(false);
+//    }
 
     private void descubrir(Point p) {
         Espacio actual;

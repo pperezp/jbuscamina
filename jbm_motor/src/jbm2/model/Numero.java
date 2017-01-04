@@ -18,10 +18,12 @@ public class Numero extends Espacio{
     public String toString() {
 //        return " "+String.valueOf(valor)+" ("+(super.isDescubierto()?"t":"f")+")";
     
-        if(super.isDescubierto()){
+        if(super.isBandera()){
+            return " B ";
+        }else if(super.isDescubierto()){
             return " "+String.valueOf(valor)+" ";
         }else{
-            return " x ";
+            return "   ";
         }
     }
     
