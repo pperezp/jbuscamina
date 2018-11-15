@@ -177,12 +177,14 @@ public class Tablero {
         Espacio actual = cuadrante[p.x][p.y];
 
         if (jugadaBandera == null) {
-            actual.setDescubierto(true);
-            if (actual instanceof Mina) {
-                return false;
-            } else if (actual instanceof Vacio) {
-                // aca ver como recorrer los cuadrante para cambiarlos
-                descubrir(p);
+            if(!isBandera(p)){ // si no es bandera, juego
+                actual.setDescubierto(true);
+                if (actual instanceof Mina) {
+                    return false;
+                } else if (actual instanceof Vacio) {
+                    // aca ver como recorrer los cuadrante para cambiarlos
+                    descubrir(p);
+                }
             }
         } else {
             actual.setBandera(jugadaBandera.isPonerBandera());

@@ -14,7 +14,7 @@ public class Mina extends Espacio{
         if(super.isDescubierto()){
             return " X ";
         }else if(super.isBandera()){
-            return " M ";
+            return " B ";
         }else{
             return "   ";
         }

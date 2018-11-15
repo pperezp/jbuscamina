@@ -7,7 +7,7 @@ import java.awt.Point;
  * @author prez
  */
 public class Espacio {
-    private Point punto;
+    private final Point punto;
     private boolean descubierto;
     private boolean bandera;
 

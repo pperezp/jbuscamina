@@ -1,11 +1,8 @@
 package jbm2.x.listeners;
 
-import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JLabel;
 import jbm2.model.JugadaBandera;
 import jbm2.x.XJbm2;

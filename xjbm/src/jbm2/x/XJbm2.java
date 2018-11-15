@@ -4,21 +4,16 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import jbm2.model.Mina;
 import jbm2.model.Espacio;
 import jbm2.model.Numero;
 import jbm2.model.Tablero;
-import jbm2.model.Vacio;
 import jbm2.x.listeners.EspacioMouseListener;
 import jbm2.x.model.Colores;
 import jbm2.x.model.HiloTiempo;
@@ -198,9 +193,9 @@ public class XJbm2 extends javax.swing.JFrame implements JuegoListener {
         habilitado = true;
         
         juego = new Tablero(
-                Reglas.filas, 
-                Reglas.columnas, 
-                Reglas.bombas
+            Reglas.filas, 
+            Reglas.columnas, 
+            Reglas.bombas
         );
         
         contMinas = Reglas.bombas;
@@ -283,12 +278,14 @@ public class XJbm2 extends javax.swing.JFrame implements JuegoListener {
 
         if (espacio.isBandera()) {
             lbl.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+            lbl.setForeground(Color.decode(Colores.BANDERA));
         } 
         
         if (espacio.isDescubierto()) {
-            lbl.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-            lbl.setBackground(Color.decode(Colores.FONDO_DESCUBIERTO));
-            
+            if(!espacio.isBandera()){
+                lbl.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+                lbl.setBackground(Color.decode(Colores.FONDO_DESCUBIERTO));
+            }
         } else {
             lbl.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
             lbl.setBackground(Color.decode(Colores.FONDO_NO_DESCUBIERTO));
@@ -336,9 +333,7 @@ public class XJbm2 extends javax.swing.JFrame implements JuegoListener {
             lblTitulo.setFont(font.deriveFont(1).deriveFont(60f));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(XJbm2.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FontFormatException ex) {
-            Logger.getLogger(XJbm2.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (FontFormatException | IOException ex) {
             Logger.getLogger(XJbm2.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
